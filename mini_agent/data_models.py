@@ -30,3 +30,15 @@ class ToolResult:
     output: str | None = None
     error_code: str | None = None
     error_message: str | None = None
+
+
+class ErrorCode:
+    """所有工具共用的标准错误码，集中定义便于统一复用与避免拼写错误。"""
+
+    INVALID_COMMAND = "INVALID_COMMAND"
+    COMMAND_NOT_ALLOWED = "COMMAND_NOT_ALLOWED"
+    PATH_OUT_OF_BOUNDS = "PATH_OUT_OF_BOUNDS"
+    TIMEOUT = "TIMEOUT"
+    EXECUTABLE_NOT_FOUND = "EXECUTABLE_NOT_FOUND"
+    NON_ZERO_EXIT = "NON_ZERO_EXIT"
+    UNKNOWN_ERROR = "UNKNOWN_ERROR"

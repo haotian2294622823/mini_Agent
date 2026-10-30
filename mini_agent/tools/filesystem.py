@@ -66,3 +66,42 @@ def list_files(workspace: str | Path, dir_path: str | Path) -> str:
         return str(e)
     except Exception as e:
         return f"列出目录时发生未知错误: {str(e)}"
+
+def grep(workspace: str | Path, pattern: str, path: str | Path) -> str:
+    "指定文件或目录下搜索关键字，返回匹配的文件名、行号、内容"
+    if not pattern:
+        return "搜索失败：关键字不能为空"
+    
+    try:
+        safe_path = resolve_workspace_path(workspace, path)
+        base_dir = Path(workspace).resolve()
+
+        if not safe_path.exists():
+            return f"搜索失败：找不到路径 '{path}'"
+
+        if safe_path.is_file():
+            target_files = [safe_path]
+        elif safe_path.is_dir():
+            target_files = sorted(p for p in safe_path.rglob("*") if p.is_file())
+        else:
+            return f"搜索失败：'{path}' 不是普通文件，无法搜索"
+
+        results = []
+        for file in target_files:
+            try:
+                with open(file, "r", encoding="utf-8") as f:
+                    for line_number, line in enumerate(f, start=1):
+                        if pattern in line:
+                            relative_path = file.relative_to(base_dir)
+                            results.append(f"{relative_path}:{line_number}:{line.strip()}")
+            except UnicodeDecodeError:
+                # 跳过无法解码的文件
+                continue
+
+        if not results:
+            return f"搜索完成：在 '{path}' 下未找到匹配 '{pattern}' 的内容"
+        return "\n".join(results)
+    except PathOutOfBoundsError as e:
+        return str(e)
+    except Exception as e:
+        return f"搜索时发生未知错误: {str(e)}"
