@@ -31,6 +31,9 @@ class ToolResult:
     error_code: str | None = None
     error_message: str | None = None
 
+    # 单次工具调用耗时，单位毫秒；由 Executor 统一填充。
+    duration_ms: float | None = None
+
 
 class ErrorCode:
     """所有工具共用的标准错误码，集中定义便于统一复用与避免拼写错误。"""
